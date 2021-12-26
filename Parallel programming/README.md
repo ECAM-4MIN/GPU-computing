@@ -2,8 +2,7 @@
 
 ## Theory
 
-- Introduction
-- c++ introduction
+- Introduction + C++
 - Labo 2 & 3
 - Labo 3
 - Labo 4

@@ -85,3 +85,260 @@ We can transform a matrix by multiplying it by another and get translation, rota
 ### 3.3. Resizing
 ![Alt text](Pictures/resize.png?raw=true "world space") 
 
+# C++
+
+- Superset of C
+- Object oriented
+- need to clean the memory manually
+
+## 1. Hello World!
+
+```
+#include <iostream>
+
+using namespace std;
+
+int main(int argc, char* args[])
+{
+	cout << "Hello World!" << endl;
+
+	return 0;
+}
+```
+## 2. Use dynamic memory
+
+`new` et `delete` instead of `malloc` and `free`
+
+```
+int* a = NULL;       // pointeur comme en C
+			a = new int;         // allocation de mémoire
+			*a = 5;              // utilisation de la mémoire
+			delete a;            // libération de la mémoire 
+			int* b = new int(5)  // tout en une fois
+			delete b;
+```
+### BEWARE
+- int* a = new int(42) ⇒ the variable is created on a stack so I can't delete it 
+- int& a = 42 ⇒ the variable is created on a pile and so will be deleted when I leave the local zone		
+
+## 3. references
+
+- Alias of a variable
+- Can only be assigned at its creation
+    - later assignments will modify the referenced variable 
+```
+int a = 5;     
+int& b = a;    // b est un alias de a
+int& c(a);     // autre syntaxe possible
+               // c est un alias de a
+b = 10;
+cout << a << ", " << c;   // affiche "10, 10"
+```
+
+### 3.1. Pas a reference to a function
+
+```
+void inc(int &x)
+{
+	x++;
+}
+
+void main()
+{
+	int a = 42;
+	inc(a);
+	cout << a;  // affiche 43
+}
+```
+
+### 3.2. Return a reference
+
+```
+int& answer()
+{
+	int a = 42;
+	return a;
+}
+
+void main()
+{
+	int& a = answer();
+	cout << a;          // Segmentation Fault !!!?
+}
+```
+
+
+## 4. Object oriented
+
+### 4.1. Define a class
+
+```
+class Answer
+{
+	private:
+	int a = 42;
+
+	public:
+	int getA();
+	void setA(int value);
+};
+
+int Answer::getA() { return a; }
+void Answer::setA(int value) { a = value; }
+
+```
+
+### 4.2. Create an instance
+
+```
+Answer ans;                 // instance statique
+cout << ans.getA();
+Answer* ans2 = new Answer;  // instance dynamique
+cout << ans2->getA();       // raccourci pour (*ans2).getA()
+delete ans2;
+```
+
+### 4.3. Builder and destroyer
+
+```
+class Answer
+{
+	private:
+	int a;
+
+	public:
+	Answer(int value);
+	~Answer();
+	int getA();
+	void setA(int value);
+};
+
+Answer::Answer(int value) { a = value; }
+Answer::~Answer() { cout << "BOOM" << endl; }
+
+int Answer::getA() { return a; }
+void Answer::setA(int value) { a = value; }
+```
+
+### 4.4. Memory handling and OO
+
+- Composition "by value"  
+```
+class Answer {
+	public:
+	int value;
+	Answer(int v) { value = v; }
+};
+
+class Everything
+{
+	public:
+	Answer a;
+	Everything(): a(42) {}
+};
+
+int main()
+{
+	Everything all;
+}
+```
+
+- Composition "by pointing"
+
+```
+class Answer {
+	public:
+	int value;
+	Answer(int v) { value = v; }
+};
+
+class Everything
+{
+	public:
+	Answer* a;
+	Everything() { a = new Answer(42); }
+	~Everything() { delete a; }
+};
+
+int main()
+{
+	Everything all;
+}
+```
+### 4.5. Heriting a class
+
+- Method overload
+```
+class Mammal
+{
+	public:
+	double weight;
+	Mammal(double weight) { this->weight = weight; }
+	virtual void yell() { cout << "..."; }
+};
+
+class Dog : public Mammal
+{
+	public:
+	Dog(double weight): Mammal(weight) {}
+	void yell() { cout << "Woof"; }
+};
+
+int main()
+{
+	Mammal* itch = new Dog(35);
+	itch->yell();
+}
+```
+
+- Abstract method
+```
+class Mammal
+{
+	public:
+	double weight;
+	Mammal(double weight) { this->weight = weight; }
+	virtual void yell() = 0;
+};
+
+class Dog : public Mammal
+{
+	public:
+	Dog(double weight): Mammal(weight) {}
+	void yell() { cout << "Woof"; }
+};
+
+int main()
+{
+	Mammal* itch = new Dog(35);
+	itch->yell();
+}
+```
+
+- Accessing hidden members of the Base class
+```
+class Mammal
+{
+	public:
+	double weight;
+	Mammal(double weight) { this->weight = weight; }
+	virtual void yell() { cout << "..."; };
+};
+
+class Dog : public Mammal
+{
+	public:
+	Dog(double weight): Mammal(weight) {}
+	void yell() { cout << "Woof"; Mammal::yell(); }
+};
+
+int main()
+{
+	Mammal* itch = new Dog(35);
+	itch->yell();
+}
+```
+
+## 5. Additional content
+
+https://cpp.developpez.com/cours/cpp/
