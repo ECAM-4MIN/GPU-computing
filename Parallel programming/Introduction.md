@@ -18,7 +18,7 @@
 ## 2. Spaces
 
 ### 2.1. Object space
-![Alt text](Pictures/object_space.png?raw=true "Object space")
+![Alt text](Pictures/object_space.png?raw=true "Object space")  
 To show a cube :
 - we give the coordinates of a 3D model in an object space
 - in projective coordinates, we have four elements in a matrix : k = projection  
