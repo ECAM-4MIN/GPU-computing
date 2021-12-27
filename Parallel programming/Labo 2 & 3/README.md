@@ -22,9 +22,11 @@ From the repo : https://github.com/qlurkin/raylib-scene
 
 ## Theory
 
-$$
+<!-- $$
 P(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{\frac{-(x-\mu)^2}{2\sigma^2}}
-$$
+$$ --> 
+
+<div align="center"><img style="background: white;" src="../../svg/vAywox820g.svg"></div>
 
 ### 1. Diffuse light
 
