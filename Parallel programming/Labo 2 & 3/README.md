@@ -32,11 +32,14 @@ Diffused light corresponds to the light bouncing (on a surface) in every directi
 
 The vectors are :
 <!-- $$
-$\vec N$ 
+$\vec{N}$
 $$ --> 
 
-- <div align="left"><img style="background: white;" src="https://render.githubusercontent.com/render/math?math=%24%5Cvec%20N%24%20"> which is the normal vector of the surface</div> 
-- $\vec L$ which is directed to the light
+
+
+
+- <div align="left"><img style="background: white;" src="../../svg/zxVYTnlAnE.svg"> which is the normal vector of the surface</div> 
+- <div align="left"><img style="background: white;" src="../../svg/h1pYN79EOI.svg"> which is directed to the light</div> 
 Both of them are of vector norm of 1.  
 
 The diffused intensity, bounced by the surface $\vec I_{d}$ is :  
