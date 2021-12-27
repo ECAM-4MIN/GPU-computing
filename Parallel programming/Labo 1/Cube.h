@@ -16,7 +16,7 @@ class Cube{
         Cube() = default;
 
         void update_position(float dt);
-        void orbit(Color color, std::vector<Cube> moons);
+        void orbit(Color color, std::vector<Cube> moons, float direction);
 
         Vector3 get_position();
         Vector3 get_size();

@@ -9,38 +9,29 @@ Cube::Cube(float dimension, Vector3 position, float orbit_radius, float orbit_ro
 
     this->rotation = 0.0f;
     this->orbit_rotation = orbit_rotation;
-    this->speed = 10.0f;
+    this->speed = 15.0f;
 }
 
 void Cube::update_position(float dt){
     rotation += dt * speed * 2;
     orbit_rotation += dt * speed;
 }
-void Cube::orbit(Color color, std::vector<Cube> moons){
+void Cube::orbit(Color color, std::vector<Cube> moons, float direction){
+    std::vector<Cube> satelites = std::vector<Cube>();
+
     rlPushMatrix();
         rlRotatef(orbit_rotation,0.0f,1.0f,0.0f);
         rlTranslatef(orbit_radius, 0.0f,0.0f);
 
-       rlPushMatrix();
-            rlRotatef(rotation,0.0f,1.0f,0.0f);
+        rlPushMatrix();
+            rlRotatef(direction * rotation,0.0f,1.0f,0.0f);     //rotation of the planet around itself
 
             DrawCube(position, dimension.x,dimension.y, dimension.z, color);
             DrawCubeWires(position, dimension.x,dimension.y, dimension.z, BLACK);
         rlPopMatrix();
 
         for(int i = 0; i < moons.size(); i++){
-            Vector3 moon_size = moons[i].get_size();
-            Vector3 moon_pos = moons[i].get_position();
-            float moon_orbit_rot = moons[i].get_orbit_rotation();
-            rlPushMatrix();
-                rlRotatef(moon_orbit_rot,0.0f,1.0f,0.0f);
-                rlTranslatef(moons[i].get_orbit_radius(), 0.0f,0.0f);
-
-                //rotation of moon around itself
-                rlRotatef(moons[i].get_rotation(),0.0f,1.0f,0.0f);
-                DrawCube(moon_pos, moon_size.x,moon_size.y, moon_size.z, LIGHTGRAY);
-                DrawCubeWires(moon_pos, moon_size.x,moon_size.y, moon_size.z, BLACK);
-            rlPopMatrix();
+            moons[i].orbit(GRAY,satelites, 1.0f);            
         }
 
     rlPopMatrix();
