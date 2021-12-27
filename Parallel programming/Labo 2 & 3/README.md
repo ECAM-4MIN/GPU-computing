@@ -22,6 +22,10 @@ From the repo : https://github.com/qlurkin/raylib-scene
 
 ## Theory
 
+$$
+P(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{\frac{-(x-\mu)^2}{2\sigma^2}}
+$$
+
 ### 1. Diffuse light
 
 Diffused light corresponds to the light bouncing (on a surface) in every directions. It doesn't depend on the point of view.
