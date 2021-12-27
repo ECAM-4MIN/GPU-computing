@@ -93,7 +93,7 @@ We can transform a matrix by multiplying it by another and get translation, rota
 
 ## 1. Hello World!
 
-```
+```cpp
 #include <iostream>
 
 using namespace std;
@@ -109,7 +109,7 @@ int main(int argc, char* args[])
 
 `new` and `delete` instead of `malloc` and `free`
 
-```
+```cpp
 int* a = NULL;       // pointeur comme en C
 a = new int;         // allocation de mémoire
 *a = 5;              // utilisation de la mémoire
@@ -126,7 +126,7 @@ delete b;
 - Alias of a variable
 - Can only be assigned at its creation
     - later assignments will modify the referenced variable 
-```
+```cpp
 int a = 5;     
 int& b = a;    // b est un alias de a
 int& c(a);     // autre syntaxe possible
@@ -137,7 +137,7 @@ cout << a << ", " << c;   // affiche "10, 10"
 
 ### 3.1. Pass a reference to a function
 
-```
+```cpp
 void inc(int &x)
 {
 	x++;
@@ -153,7 +153,7 @@ void main()
 
 ### 3.2. Return a reference
 
-```
+```cpp
 int& answer()
 {
 	int a = 42;
@@ -172,7 +172,7 @@ void main()
 
 ### 4.1. Define a class
 
-```
+```cpp
 class Answer
 {
 	private:
@@ -190,7 +190,7 @@ void Answer::setA(int value) { a = value; }
 
 ### 4.2. Create an instance
 
-```
+```cpp
 Answer ans;                 // instance statique
 cout << ans.getA();
 Answer* ans2 = new Answer;  // instance dynamique
@@ -223,7 +223,7 @@ void Answer::setA(int value) { a = value; }
 ### 4.4. Memory handling and OO
 
 - Composition "by value"  
-```
+```cpp
 class Answer {
 	public:
 	int value;
@@ -245,7 +245,7 @@ int main()
 
 - Composition "by pointing"
 
-```
+```cpp
 class Answer {
 	public:
 	int value;
@@ -268,7 +268,7 @@ int main()
 ### 4.5. Heriting a class
 
 - Method overload
-```
+```cpp
 class Mammal
 {
 	public:
@@ -292,7 +292,7 @@ int main()
 ```
 
 - Abstract method
-```
+```cpp
 class Mammal
 {
 	public:
@@ -316,7 +316,7 @@ int main()
 ```
 
 - Accessing hidden members of the Base class
-```
+```cpp
 class Mammal
 {
 	public:
@@ -342,7 +342,7 @@ int main()
 
 ### 5.1 Class.h
 
-```
+```cpp
 #pragma once
 #include <vector>
 #include <raylib.h>
@@ -363,7 +363,7 @@ class Ball {
 };
 ```
 ### 5.2. Class.cpp
-```
+```cpp
 #include "Ball.h"
 #include <raymath.h>
 #include <rlgl.h>
@@ -389,7 +389,7 @@ float Ball::getRadius(){
 
 ```
 ### 5.3. main.cpp
-```
+```cpp
 #include "raylib.h"
 #include "Ball.h"
 int main(void)
