@@ -22,11 +22,7 @@ From the repo : https://github.com/qlurkin/raylib-scene
 
 ## Theory
 
-<!-- $$
-P(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{\frac{-(x-\mu)^2}{2\sigma^2}}
-$$ --> 
 
-<div align="center"><img style="background: white;" src="../../svg/vAywox820g.svg"></div>
 
 ### 1. Diffuse light
 
@@ -35,7 +31,11 @@ Diffused light corresponds to the light bouncing (on a surface) in every directi
 ![Alt text](https://quentin.lurkin.xyz/courses/gpu/labo2_3/images/Diffuse.svg?raw=true "bunny")  
 
 The vectors are :
-- $\vec N$ which is the normal vector of the surface
+<!-- $$
+$\vec N$ 
+$$ --> 
+
+- <div align="left"><img style="background: white;" src="https://render.githubusercontent.com/render/math?math=%24%5Cvec%20N%24%20"> which is the normal vector of the surface</div> 
 - $\vec L$ which is directed to the light
 Both of them are of vector norm of 1.  
 
