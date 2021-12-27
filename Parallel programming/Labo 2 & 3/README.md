@@ -22,21 +22,15 @@ From the repo : https://github.com/qlurkin/raylib-scene
 
 ## Theory
 
-
+Link : https://quentin.lurkin.xyz/courses/gpu/labo2_3/index.html
 
 ### 1. Diffuse light
 
 Diffused light corresponds to the light bouncing (on a surface) in every directions. It doesn't depend on the point of view.
 
-![Alt text](https://quentin.lurkin.xyz/courses/gpu/labo2_3/images/Diffuse.svg?raw=true "bunny")  
+![Alt text](img/diffuse.png "bunny")  
 
 The vectors are :
-<!-- $$
-vec{C_{d}}
-$$ --> 
-
-
-
 
 
 - <div align="left"><img style="background: black;" src="../../svg/nRVstOAtu9.svg"> which is the normal vector of the surface</div> 
@@ -45,13 +39,9 @@ Both of them are of vector norm of 1.
 
 <div align="left">The diffused intensity, bounced by the surface <img style="background: black;" src="../../svg/2hUWvKrNGq.svg"> is :</div>  
 <div align="center"><img style="background: black;" src="../../svg/b4UhGmVyiz.svg"></div>  
-<div align="center">Where <img style="background: black;" src="../../svg/esJ2geJYCi.svg">is the diffused color (the color of the object). The colors are vectors (r,g,b).</div> 
+<div align="left">Where <img style="background: black;" src="../../svg/cwg1etVWXT.svg">is the diffused color (the color of the object). The colors are vectors (r,g,b).</div> 
 
 
-<!-- The diffused intensity, bounced by the surface $\vec I_{d}$ is :  
-    $\vec I_{d}$ = ($\vec N$ $\cdot$ $\vec L$) $\vec C_{d}$  
-
-where $\vec C_{d}$ is the diffused color (the color of the object). The colors are vectors (r,g,b).   -->
 
 `Write shaders that apply this formula for each fragment`.  
   
@@ -61,13 +51,13 @@ where $\vec C_{d}$ is the diffused color (the color of the object). The colors a
 ### 2. Specular lightning
 
 It corresponds to the reflection of the light source on a surface. It depends on the point of view.  
-![Alt text](https://quentin.lurkin.xyz/courses/gpu/labo2_3/images/Specular.svg "pew")  
+![Alt text](img/specular.png "pew")  
 
 The vectors are :
-- $\vec N$ which is the normal vector of the surface
-- $\vec L$ which is directed to the light
-- $\vec{R}$ is the reflected vector
-- $\vec{V}$ is the vector directed to the camera  
+- N which is the normal vector of the surface
+- L which is directed to the light
+- R is the reflected vector
+- V is the vector directed to the camera  
 All of them are of vector norm of 1.  
 
 The reflected specular intensity $\vec I_{s}$ is :  
@@ -82,4 +72,45 @@ $\vec R$ = 2 ($\vec N$ $\cdot$ $\vec L$) $\vec {N}$ - $\vec{L}$
 
 ### 3. Normal Mapping
 
-### 4. Useful GLSL functions
+The normal mappoing consists of using a texture containing normals at the surface.  
+It's used to make the normal with most details vary, without adding details at the 3D geometry.  
+
+The (r,g,b) colors of the normal texture must be converted. They vary between 0 and 1 and coordinates of a unit vector vary between -1 and 1.  
+We thus apply at each component `Ni = 2Ci -1`
+
+The normals inside the texture are given in a landmark that is tangent to the surface. This landmark is composed of 3 vectors :  
+
+![Alt text](img/mapping.png "pew") 
+
+where 
+- `N` is the normal vecor to the surface
+- `T` is the tangent vector that follows the texture coordinates : `u`
+- B is the binormal vector that is perpendicular to the 2 others  
+
+`N` and `T` are data that are part of Vertex Data. `B` can be calculated with : `B = N x T`  
+
+![Alt text](img/flemme.png "pew")  
+
+`Modify your shaders and c++ code to use an additional texture that contains the normals`
+
+### 4. Notes
+
+A shader is in GLSL format or hlsl.  
+We go from a vertex shader => Rasterization => frag shader
+
+1. Vertex shader  
+- 3 coordinates
+- we apply a transformation for each coordinate
+- we prepare data for each corner  :
+    - position (x, y, z)
+    - normal (lightning) (nx, ny, nz)
+    - texture coordinate (U, V) from (0,0) to (1, 1)
+    - color
+2. Rasterization
+- triangle divided in fragments ~ pixels
+- interpolate the values of the corners in the fragments
+    - calculate the means
+    - linear interpolation
+3. Fragment shader
+- executed once per fragment
+- to draw a cube, a corner will be rendered 3 times (1 normal for each side of the cube linked to the corner)
