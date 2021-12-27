@@ -32,18 +32,26 @@ Diffused light corresponds to the light bouncing (on a surface) in every directi
 
 The vectors are :
 <!-- $$
-\vec{L}
+vec{C_{d}}
 $$ --> 
 
 
-- <div align="left"><img style="background: white;" src="../../svg/nRVstOAtu9.svg"> which is the normal vector of the surface</div> 
-- <div align="left"><img style="background: white;" src="../../svg/SDWQfVO3yu.svg"> which is directed to the light</div> 
+
+
+
+- <div align="left"><img style="background: black;" src="../../svg/nRVstOAtu9.svg"> which is the normal vector of the surface</div> 
+- <div align="left"><img style="background: black;" src="../../svg/SDWQfVO3yu.svg"> which is directed to the light</div> 
 Both of them are of vector norm of 1.  
 
-The diffused intensity, bounced by the surface $\vec I_{d}$ is :  
+<div align="left">The diffused intensity, bounced by the surface <img style="background: black;" src="../../svg/2hUWvKrNGq.svg"> is :</div>  
+<div align="center"><img style="background: black;" src="../../svg/b4UhGmVyiz.svg"></div>  
+<div align="center">Where <img style="background: black;" src="../../svg/esJ2geJYCi.svg">is the diffused color (the color of the object). The colors are vectors (r,g,b).</div> 
+
+
+<!-- The diffused intensity, bounced by the surface $\vec I_{d}$ is :  
     $\vec I_{d}$ = ($\vec N$ $\cdot$ $\vec L$) $\vec C_{d}$  
 
-where $\vec C_{d}$ is the diffused color (the color of the object). The colors are vectors (r,g,b).  
+where $\vec C_{d}$ is the diffused color (the color of the object). The colors are vectors (r,g,b).   -->
 
 `Write shaders that apply this formula for each fragment`.  
   
