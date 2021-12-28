@@ -10,13 +10,14 @@ CFLAGS  = -g -Wall
 TARGET = build /app
 
 #NEW
-app: build/main.o 
-	$(CC) $(CFLAGS) -o app build/main.o -lraylib
+app: build/main.o build/object.o
+	$(CC) $(CFLAGS) -o app build/main.o build/object.o -lraylib
 
 build/main.o: main.cpp 
 	$(CC) $(CFLAGS) -c -o build/main.o main.cpp
 
-
+build/object.o: src/Object.cpp src/Object.h
+	$(CC) -c -o build/object.o src/Object.cpp
 
 
 clean:

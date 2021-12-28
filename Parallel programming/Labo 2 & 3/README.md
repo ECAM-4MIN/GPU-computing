@@ -22,7 +22,11 @@ From the repo : https://github.com/qlurkin/raylib-scene
 
 ## Theory
 
-Link : https://quentin.lurkin.xyz/courses/gpu/labo2_3/index.html
+- Course : https://quentin.lurkin.xyz/courses/gpu/labo2_3/index.html
+- Great tutorial : https://learnopengl.com/Lighting/Basic-Lighting
+- Diffuse Light : https://www.tomdalling.com/blog/modern-opengl/06-diffuse-point-lighting/
+- Basic lighnting : https://learnopengl.com/Lighting/Basic-Lighting
+- Light : http://www.c-jump.com/bcc/common/Talk3/OpenGL/Wk06_light/Wk06_light.html
 
 ### 1. Diffuse light
 
