@@ -38,29 +38,40 @@ int main(void)
     camera.fovy = 45.0f;                                        // Camera field-of-view Y
     camera.projection = CAMERA_PERSPECTIVE;                     // Camera mode type
 
-
+    //=====================PARAMETERS==================//
+    bool isPaused = true;
     float dt = 0.0f;
     //=====================BUNNY=======================//
 
-    Vector3 position = { 0.0f, 0.0f, 0.0f };                    // Set model position
+    Vector3 position = { 0.0f, 2.0f, 0.0f };                    // Set model position
 
     //Model
-    Model model = LoadModel("assets/models/bunny.obj");
+    Model model = LoadModel("assets/models/wall.obj");
+    // Model model = LoadModel("assets/models/bunny.obj");
     GenMeshTangents(model.meshes);
 
     //texture
-    Texture2D texture = LoadTexture("assets/textures/texel_checker.png");                // Load model texture
+    Texture2D texture = LoadTexture("assets/textures/cgaxis_pbr_17_stone_wall_5_diffuse.png");
+    // Texture2D texture = LoadTexture("assets/textures/brickwall.png");
+    // Texture2D texture = LoadTexture("assets/textures/texel_checker.png");                // Load model texture
     model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;            // Set map diffuse texture
+
+    Texture2D normal_texture = LoadTexture("assets/textures/cgaxis_pbr_17_stone_wall_5_normal.png");
+    // Texture2D normal_texture = LoadTexture("assets/textures/brickwall_normal.png");
+    model.materials[0].maps[MATERIAL_MAP_NORMAL].texture = normal_texture;
+
+
 
     //shaders
     // Shader shader = LoadShader("assets/shaders/base.vs", "assets/shaders/base.fs");
-    Shader shader = LoadShader("assets/shaders/specular.vs", "assets/shaders/specular.fs");
+    // Shader shader = LoadShader("assets/shaders/specular.vs", "assets/shaders/specular.fs");
+    Shader shader = LoadShader("assets/shaders/normal_mapping.vs", "assets/shaders/normal_mapping.fs");
     model.materials[0].shader = shader;                                         // Set shader effect to 3d model
     model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;            // Bind texture to model
 
     //==================Light======================
-    Vector3 sunPos = {0.0f, 5.0f, 5.0f };
-    float rotation = 0.0f;
+    Vector3 sunPos = {0.0f, 0.0f, 0.0f };
+    float rotation = 90.0f;
     float radius = 5.0f;
 
     // Diffuse light
@@ -87,9 +98,13 @@ int main(void)
         UpdateCamera(&camera);          // Update camera
 
         if (IsKeyDown('Z')) camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
+        if (IsKeyPressed(KEY_SPACE)) isPaused = !isPaused;
 
         dt = GetFrameTime();
-        rotation += dt * 0.5f;
+
+        if( !isPaused){
+            rotation += dt * 0.5f;
+        }
         
         //----------------------------------------------------------------------------------
         sunPos.x = cos(rotation) * radius;
@@ -117,7 +132,7 @@ int main(void)
                 //     DrawSphere(sunPos,1.0f,YELLOW);
                 // rlPopMatrix();
                 
-                DrawModel(model, position, 10.0f, WHITE);        // Draw 3d model with texture
+                DrawModel(model, position, 1.0f, WHITE);        // Draw 3d model with texture
 
                 DrawGrid(10, 1.0f);
 

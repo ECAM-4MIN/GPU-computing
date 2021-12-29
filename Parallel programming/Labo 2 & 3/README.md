@@ -27,6 +27,7 @@ From the repo : https://github.com/qlurkin/raylib-scene
 - Diffuse Light : https://www.tomdalling.com/blog/modern-opengl/06-diffuse-point-lighting/
 - Basic lighnting : https://learnopengl.com/Lighting/Basic-Lighting
 - Light : http://www.c-jump.com/bcc/common/Talk3/OpenGL/Wk06_light/Wk06_light.html
+- normal mapping : https://learnopengl.com/Advanced-Lighting/Normal-Mapping
 
 ### 1. Diffuse light
 
@@ -96,6 +97,9 @@ where
 ![Alt text](img/flemme.png "pew")  
 
 `Modify your shaders and c++ code to use an additional texture that contains the normals`
+
+#### Important to note !
+OpenGL reads texture coordinates with the y (or v) coordinate reversed from how textures are generally created. The linked normal map thus has its y (or green) component inversed. The green of the normal map is therefore pointing `downwards`!
 
 ### 4. Notes
 
