@@ -35,23 +35,8 @@ Diffused light corresponds to the light bouncing (on a surface) in every directi
 
 ![Alt text](img/diffuse.png "bunny")  
 
-The vectors are :
-
-
-- <div align="left"><img style="background: black;" src="../../svg/nRVstOAtu9.svg"> which is the normal vector of the surface</div> 
-- <div align="left"><img style="background: black;" src="../../svg/SDWQfVO3yu.svg"> which is directed to the light</div> 
-Both of them are of vector norm of 1.  
-
-<div align="left">The diffused intensity, bounced by the surface <img style="background: black;" src="../../svg/2hUWvKrNGq.svg"> is :</div>  
-<div align="center"><img style="background: black;" src="../../svg/b4UhGmVyiz.svg"></div>  
-<div align="left">Where <img style="background: black;" src="../../svg/cwg1etVWXT.svg">is the diffused color (the color of the object). The colors are vectors (r,g,b).</div> 
-
-
 
 `Write shaders that apply this formula for each fragment`.  
-  
-![Alt text](https://quentin.lurkin.xyz/courses/gpu/labo2_3/images/cgaxis_pbr_17_stone_wall_5_diffuse.jpg?raw=true "Diffused texture")
-
 
 ### 2. Specular lightning
 
@@ -64,14 +49,6 @@ The vectors are :
 - R is the reflected vector
 - V is the vector directed to the camera  
 All of them are of vector norm of 1.  
-
-The reflected specular intensity $\vec I_{s}$ is :  
-
-$\vec I_{d}$ = ($\vec R$ $\cdot$ $\vec V$)$^a$ $\vec C_{l}$  
-
-Where $\vec C_{l}$ is the color of the light and $\alpha$ the brillance of the material.  
-We can find $\vec R$ thanks to :  
-$\vec R$ = 2 ($\vec N$ $\cdot$ $\vec L$) $\vec {N}$ - $\vec{L}$  
 
 `Modify the shaders so that they include the specular light`
 
