@@ -16,7 +16,12 @@ The course objective : https://quentin.lurkin.xyz/courses/gpu/labo2_3/index.html
 From the repo : https://github.com/qlurkin/raylib-scene
 - configure the env
 - charge [bunny.obj](https://raw.githubusercontent.com/qlurkin/raylib-scene/shader/assets/models/bunny.obj)
-- add the texture [texel](https://github.com/qlurkin/raylib-scene/blob/shader/assets/textures/texel_checker.png)
+- add the texture [texel](https://github.com/qlurkin/raylib-scene/blob/shader/assets/textures/texel_checker.png)  
+
+To do :
+- :white_check_mark: Diffuse light
+- :white_check_mark: add specular light
+- :x: add normal mapping
 
 ![Alt text](img/texeledBunny.png?raw=true "bunny")  
 
