@@ -10,3 +10,5 @@ $ ./app
 ```
 
 The course objective : https://quentin.lurkin.xyz/courses/gpu/labo1/index.html
+
+![Alt Text](labo_1.gif)

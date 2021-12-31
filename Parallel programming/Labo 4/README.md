@@ -15,3 +15,5 @@ The course objective : https://quentin.lurkin.xyz/courses/gpu/labo4/index.html
 - Animate a particle
 - Collision within a cube
 - Add gravity
+
+![Alt Text](output/labo_4.gif)
