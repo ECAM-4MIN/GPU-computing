@@ -10,7 +10,8 @@ Sphere::Sphere(Vector3 position, float radius, float friction) {
 }
 
 void Sphere::draw_sphere(){    
-    DrawSphere(position,radius, RED);
+    Color color = Color{200,20,20, 200};
+    DrawSphere(position,radius, color);
 }
 
 

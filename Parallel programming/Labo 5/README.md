@@ -1,4 +1,4 @@
-# LABO 5 : Tissue simu
+# LABO 5 : Cloth simu
 
 ## Setup
 
@@ -18,7 +18,10 @@ The course objective : https://quentin.lurkin.xyz/courses/gpu/labo5/
     - [x] gravity
     - [x] frictions
     - [ ] spring:
-        - [ ] structural
-        - [ ] shear
-        - [ ] bend
-    - [ ] damping
+        - [x] structural
+        - [x] shear
+        - [x] bend
+    - [x] damping
+
+### Something is wrong with the springs and/or the coefs  
+![Alt Text](output/cloth.gif "cloth simu")

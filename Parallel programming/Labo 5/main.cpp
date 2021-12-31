@@ -28,13 +28,13 @@ int main(void)
 
     //Tissue
 
-    Particles tissue = Particles(256, 5.0f, 0.05f);
+    Particles tissue = Particles(100, 5.0f, 0.05f);
 
    
 
     // sphere
     // at (0,0,0) the middle point disappears misteriousely
-    Sphere sphere = Sphere({0.1f,0.0f,0.0f},1.5f,0.1f);
+    Sphere sphere = Sphere({0.1f,0.0f,0.0f},1.5f,1.9f);
 
     //camera
 

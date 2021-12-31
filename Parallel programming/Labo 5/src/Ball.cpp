@@ -12,15 +12,23 @@ Ball::Ball(Vector3 position, Vector3 speed,float radius) {
     this->speed = speed;
     this->radius = radius;
 
-    this->mass = 0.05f;
+    this->mass = 0.1f;
     this->isFalling = true;
 
-    this->k1 = 0.1f;
-    this->k2 = 0.15f;
+    this->k1 = 0.05f;
+    this->k2 = 0.01f;
     this->k3 = 0.05f;
 
     this->resultingForces = {0.0f,0.0f,0.0f};
 
+}
+
+float round_float(float number){
+    int decimal = 4;
+    int multiplier = pow(10,decimal);
+
+    float value = (int)(number * multiplier + .5);
+    return (float)value / multiplier;
 }
 void Ball::set_neighboors(std::vector<Vector3> structural, std::vector<Vector3> shear, std::vector<Vector3> bend, bool first_setup){
     this->structural = structural;
@@ -34,10 +42,11 @@ void Ball::set_neighboors(std::vector<Vector3> structural, std::vector<Vector3> 
         this->shearSize = shear.size();
         this->bendSize = bend.size();
         
-        // rest length between each particle
-        this->structuralRestLen = abs(position.x - structural[0].x) + abs(position.z - structural[0].z);
-        this->shearRestLen = sqrt(pow(position.x - shear[0].x,2) + pow(position.z - shear[0].z,2));
-        this->bendRestLen = abs(position.x - bend[0].x) + abs(position.z - bend[0].z);
+        // rest length between each particle and round to the fourth decimal
+        this->structuralRestLen = round_float(abs(position.x - structural[0].x) + abs(position.z - structural[0].z));
+        this->shearRestLen = round_float(sqrt(pow(position.x - shear[0].x,2) + pow(position.z - shear[0].z,2)));
+        this->bendRestLen = round_float(abs(position.x - bend[0].x) + abs(position.z - bend[0].z));
+
     }
 
     
@@ -52,6 +61,12 @@ void Ball::update_position(float dt){
         resultingForces.z / mass
     };
 
+    // position :  x(t) = x0 + v0 * dt + 1/2 * a * dt²
+
+    position.x += speed.x * dt + 0.5f * a.x * pow(dt,2);
+    position.y += speed.y * dt + 0.5f * a.y * pow(dt,2);
+    position.z += speed.z * dt + 0.5f * a.z * pow(dt,2);
+
     // speed
     speed.x += dt * a.x;
     speed.y += dt * a.y;
@@ -59,9 +74,9 @@ void Ball::update_position(float dt){
 
     // position
 
-    position.x += speed.x * dt;
-    position.y += speed.y * dt; 
-    position.z += speed.z * dt;
+    // position.x += speed.x * dt;
+    // position.y += speed.y * dt; 
+    // position.z += speed.z * dt;
 
 }
 
@@ -69,15 +84,18 @@ Vector3 Ball::compute_spring(int neighboorSize, std::vector<Vector3> neighbors, 
         Vector3 totForces = {0.0f, 0.0f, 0.0f};
 
         for (int i = 0; i< neighboorSize; i++){
+
             float dist = sqrt(
                 pow(position.x - neighbors[i].x,2) +
                 pow(position.y - neighbors[i].y,2) +
                 pow(position.z - neighbors[i].z,2)
             );
-            // std::cout<<abs(dist) << " ";
+            dist = round_float(dist);
+            
+            // std::cout<< round_float(dist) << " ";
 
             //==========================THE IF IS THE SOURCE OF THE PROBLEM===================
-            if (abs(dist - restLen) >= 0.31f){
+            if (abs(dist - restLen) >= 0.0001f){
 
                 // itself pos
                 Vector3 p1 = position;
@@ -122,7 +140,7 @@ void Ball::update_forces(float cf, Vector3 sphere_pos, float sphere_radius){
 
     //==========Gravity=============//
 
-    float fg = - mass * 0.981f;
+    float fg = - mass * 9.81f;
 
     //==========Friction============//
 
@@ -218,8 +236,10 @@ void Ball::update_forces(float cf, Vector3 sphere_pos, float sphere_radius){
 
     // damping
 
-    Vector3 fd = {0.0f, 0.0f, 0.0f};    
-    float cd = 1.1f;
+    Vector3 fd = {0.0f, 0.0f, 0.0f};   
+
+    // should be between 0 and 1 
+    float cd = 0.9f;
 
     if ((   fst.x + fst.y + fst.z != 0.0f) or 
         (   fsh.x + fsh.y + fsh.z != 0.0f ) or 
