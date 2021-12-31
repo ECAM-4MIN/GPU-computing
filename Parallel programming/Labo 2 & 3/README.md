@@ -23,7 +23,7 @@ To do :
 - :white_check_mark: add specular light
 - :x: add normal mapping
 
-![Alt text](img/texeledBunny.png?raw=true "bunny")  
+![Alt text](img/bunny.gif "bunny")  
 
 ## Theory
 
