@@ -6,7 +6,7 @@ import cv2
 import math
 
 img = mpimg.imread("chessboard.jpg")
-# hsv_img = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
+hsv_img = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
 
 def harris(img):
     gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
