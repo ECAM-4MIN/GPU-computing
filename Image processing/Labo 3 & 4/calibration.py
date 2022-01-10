@@ -19,8 +19,9 @@ imgpoints = [] # 2d points in image plane.
 images = glob.glob('./chessboards/*.png')
 
 def calibrate():
-    for image in images:
 
+    # find corners
+    for image in images:
         img = cv2.imread(image)
         gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 
@@ -39,10 +40,13 @@ def calibrate():
             # cv2.waitKey(0)
     # cv2.destroyAllWindows()
 
-
     #__________________________________________
     # calibrate
     ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
+
+    # print(rvecs)
+    # print("__________________________________________________")
+    # print(tvecs)
 
     #__________________________________________
     # undistortion
@@ -57,14 +61,50 @@ def calibrate():
     dst = dst[y:y+h, x:x+w]
     # cv2.imwrite('calibresult.png', dst)
 
-    #________________________________________
-    # mean_error = 0
-    # for i in range(len(objpoints)):
-    #     imgpoints2, _ = cv2.projectPoints(objpoints[i], rvecs[i], tvecs[i], mtx, dist)
-    #     error = cv2.norm(imgpoints[i], imgpoints2, cv2.NORM_L2)/len(imgpoints2)
-    #     mean_error += error
-    # print( "total error: {}".format(mean_error/len(objpoints)) )
 
-    return ret, mtx, dist, rvecs, tvecs, newcameramtx, roi
+    return ret, mtx, dist, rvecs, tvecs, newcameramtx, roi, dst
 
-calibrate()
+def create_cameras(mtx, rvecs, tvecs):
+    #_________________________________________________
+    # create camera matrices
+    # On transforme le rvecs en matrice 3x3
+    # Rotation matrix => Convertir un vecteur en matrice
+    rmatRight = cv2.Rodrigues(rvecs[3])[0] ## rvecs 3 représente c4Right
+    rmatLeft = cv2.Rodrigues(rvecs[2])[0] ## rvecs 2 représente c4Left
+    # Le 3 et le 2 correspondent aux lignes qui sont renvoyée par Rvecs et chaque ligne correspond à une image du chessboard
+    
+    # Full [R|t] matrix => ajout t in R
+    rotMatRight = np.concatenate((rmatRight,tvecs[0]), axis=1)
+    rotMatLeft = np.concatenate((rmatLeft,tvecs[0]), axis=1)
+
+    # Matrice caméra (A [R|t])
+    camLeft = mtx @ rotMatLeft
+    camRight = mtx @ rotMatRight
+    
+    # e and e', which are the optic center of each camera
+    camWorldCenterLeft = np.linalg.inv(np.concatenate((rotMatLeft,[[0,0,0,1]]), axis=0)) @ np.transpose([[0,0,0,1]])
+    camWorldCenterRight = np.linalg.inv(np.concatenate((rotMatRight,[[0,0,0,1]]), axis=0)) @ np.transpose([[0,0,0,1]])
+
+
+    return camLeft, camRight, camWorldCenterLeft, camWorldCenterRight
+
+
+def plot_cameras(camWorldCenterLeft,camWorldCenterRight):
+    fig = plt.figure()
+    ax = plt.axes(projection='3d')
+    
+    ax.scatter3D(objp[:,0],objp[:,1],objp[:,2])
+    
+    x,y,z,d = camWorldCenterLeft
+    ax.scatter(x, y, z, c='r', marker='o') ## En rouge, le centre caméra gauche
+    
+    x2,y2,z2,d2 = camWorldCenterRight
+    ax.scatter(x2, y2, z2 , c='g', marker='o') ## En vert, le centre caméra droite
+    
+    plt.show()
+
+
+
+""" TESTS"""
+# ret, mtx, dist, rvecs, tvecs, newcameramtx, roi, dst = calibrate()
+# create_cameras(mtx, rvecs, tvecs)
