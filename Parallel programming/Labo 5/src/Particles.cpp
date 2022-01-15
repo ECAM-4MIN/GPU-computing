@@ -51,32 +51,71 @@ void Particles::add_neighboors(bool first_setup){
     for (int i=0; i< side_qty; i++){
         for(int j=0; j<side_qty; j++){
 
-            for (int x = 0; x < side_qty; x++){
-                for(int y = 0; y < side_qty; y++){
-                    
-                    // structural 
+            // set the neighboors positions once, don't need to check more
 
-                    if ( abs(i-x) + abs(j-y) == 1 ){
-                        structural.push_back(particles[y + side_qty * x].get_position());
-                    }
+            if(first_setup){
+                std::vector<int> structural_neigh = std::vector<int>();
+                std::vector<int> shear_neigh = std::vector<int>();
+                std::vector<int> bend_neigh = std::vector<int>();
 
-                    // shear
+                for (int x = 0; x < side_qty; x++){
+                    for(int y = 0; y < side_qty; y++){
 
-                    if ( abs(i-x) == 1 and abs(j-y) == 1 ){
-                        shear.push_back(particles[y + side_qty * x].get_position());
-                    }
+                        // structural 
 
-                    //bend
+                        if ( abs(i-x) + abs(j-y) == 1 ){
+                            structural.push_back(particles[y + side_qty * x].get_position());
+                            structural_neigh.push_back(y + side_qty * x);
+                        }
 
-                    if ( (abs(i-x) == 2 and abs(j-y) == 0) or (abs(i-x) == 0 and abs(j-y) == 2)){
-                        bend.push_back(particles[y + side_qty * x].get_position());
+                        // shear
+
+                        if ( abs(i-x) == 1 and abs(j-y) == 1 ){
+                            shear.push_back(particles[y + side_qty * x].get_position());
+                            shear_neigh.push_back(y + side_qty * x);
+                        }
+
+                        //bend
+
+                        if ( (abs(i-x) == 2 and abs(j-y) == 0) or (abs(i-x) == 0 and abs(j-y) == 2)){
+                            bend.push_back(particles[y + side_qty * x].get_position());
+                            bend_neigh.push_back(y + side_qty * x);
+                        }
                     }
                 }
+                particles[j + side_qty * i].set_neighboors_indices(structural_neigh,shear_neigh,bend_neigh);
+
+                structural_neigh.clear();
+                shear_neigh.clear();
+                bend_neigh.clear();
             }
-            // std::cout<< bend.size();
-            // std::cout<< "\n";
+            else{
+
+                std::vector<int> structural_neigh    = particles[j + side_qty * i].get_neighboors_indices(0);
+                std::vector<int> shear_neigh         = particles[j + side_qty * i].get_neighboors_indices(1);
+                std::vector<int> bend_neigh          = particles[j + side_qty * i].get_neighboors_indices(2);
+
+                
+                //structural
+                for (int x = 0; x < structural_neigh.size(); x++){
+                    structural.push_back(particles[structural_neigh[x]].get_position());
+                }
+
+                //shear
+                for (int x = 0; x < shear_neigh.size(); x++){
+                    shear.push_back(particles[shear_neigh[x]].get_position());
+                }
+
+                //bend
+                for (int x = 0; x < bend_neigh.size(); x++){
+                    bend.push_back(particles[bend_neigh[x]].get_position());
+                }
+            }
+            
 
             particles[j + side_qty * i].set_neighboors(structural,shear,bend, first_setup);
+            
+
             structural.clear();
             shear.clear();
             bend.clear();
@@ -119,9 +158,10 @@ void Particles::move_particles(float dt, Sphere sphere){
     float friction_coef = sphere.get_friction();
 
     for (int i =0;i<quantity;i++){
+
+        particles[i].update_position(dt);
         particles[i].update_collisions(pos,radius, dt);
         particles[i].update_forces(friction_coef, pos, radius);        
-        particles[i].update_position(dt);
     
     }
 }

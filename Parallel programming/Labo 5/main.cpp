@@ -34,7 +34,7 @@ int main(void)
 
     // sphere
     // at (0,0,0) the middle point disappears misteriousely
-    Sphere sphere = Sphere({0.1f,0.0f,0.0f},1.5f,1.9f);
+    Sphere sphere = Sphere({0.1f,0.0f,0.0f},1.5f,1.0f);
 
     //camera
 

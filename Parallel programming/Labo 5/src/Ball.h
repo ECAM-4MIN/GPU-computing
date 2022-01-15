@@ -23,6 +23,10 @@ class Ball {
         std::vector<Vector3> shear;
         std::vector<Vector3> bend;
 
+        std::vector<int> structural_neigh;
+        std::vector<int> shear_neigh;
+        std::vector<int> bend_neigh;
+
         int structuralSize;
         int shearSize;
         int bendSize;
@@ -32,6 +36,7 @@ class Ball {
         float bendRestLen;
 
         Vector3 compute_spring(int neighboorSize, std::vector<Vector3> neighbors, float restLen, float k);
+        Vector3 compute_friction(float cf, Vector3 sphere_pos, float sphere_radius);
 
         Vector3 resultingForces;
 
@@ -48,6 +53,9 @@ class Ball {
         Vector3 get_position();
         Vector3 get_speed();
         float get_radius();
+
+        std::vector<int> get_neighboors_indices(int type);
+        void set_neighboors_indices(std::vector<int> structural, std::vector<int> shear, std::vector<int> bend);
 
         
 };
