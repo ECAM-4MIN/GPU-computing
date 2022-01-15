@@ -55,7 +55,7 @@ void main()
     // transform normal vector to range [-1,1]
     vec3 normalMap = normalize(normalColor * 2.0 - 1.0); 
 
-    vec3 normal = normalize(worldNormal * normalMap);
+    vec3 normal = normalize(matNormal * normalMap);
     vec3 tangent = normalize(matNormal * fragTangent.xyz);
     vec3 binormal = normalize(cross(normal, tangent));
 
@@ -72,7 +72,7 @@ void main()
 
     // find light source : L = Lightposition - surfacePosition
     vec3 lightDir = normalize(lightPos - worldPosition);
-    lightDir = TBN * lightDir ; // NOT WORKING
+    lightDir *= TBN; // NOT WORKING
 
     // diffuse the light with the dot matrix :
     float shading = clamp(dot(worldNormal, lightDir), 0.1, 1.0);
@@ -85,7 +85,7 @@ void main()
     
     // //calculate the view direction vector and corresponding reflect vector along the normal axis
     vec3 viewDir = normalize(viewPos - worldPosition);
-    viewDir = TBN * viewDir; // NOT WORKING
+    viewDir *= TBN;// NOT WORKING
 
     vec3 reflectDir = reflect(-lightDir, worldNormal);  
     //Note that we negate the lightDir vector. 
