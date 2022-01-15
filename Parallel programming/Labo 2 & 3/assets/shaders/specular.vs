@@ -16,7 +16,6 @@ out vec2 fragTexCoord;
 out vec4 fragColor;
 // added
 out vec3 fragPosition;
-out vec4 fragTangent;
 out vec3 fragNormal;
 
 
@@ -30,7 +29,6 @@ void main()
     //added
     fragNormal = vertexNormal;
     fragPosition = vertexPosition;
-    fragTangent = vertexTangent;
 
 
     // Calculate final vertex position

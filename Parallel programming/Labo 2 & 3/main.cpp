@@ -45,25 +45,30 @@ int main(void)
     
     //=====================BUNNY=======================//
 
-    Vector3 position = { 0.0f, 0.0f, 0.0f };                                // Set model position
+    // Vector3 position = { 0.0f, 0.0f, 0.0f };                                // Set model position
 
-    //Model
-    Model model = LoadModel("assets/models/bunny.obj");                     // Load model
+    // //Model
+    // Model model = LoadModel("assets/models/bunny.obj");                     // Load model
 
-    //texture
-    Texture2D texture = LoadTexture("assets/textures/texel_checker.png");   // Load model texture
+    // //texture
+    // Texture2D texture = LoadTexture("assets/textures/texel_checker.png");   // Load model texture
 
 
     //=====================WALL=======================//
 
-    // Vector3 position = { 0.0f, 0.0f, 0.0f };
+    Vector3 position = { -2.5f, 3.0f, 0.0f };
 
-    // Model model = LoadModel("assets/models/wall.obj");
-    // Texture2D texture = LoadTexture("assets/textures/cgaxis_pbr_17_stone_wall_5_diffuse.png");
+    Model model = LoadModel("assets/models/wall.obj");
+    Texture2D texture = LoadTexture("assets/textures/cgaxis_pbr_17_stone_wall_5_diffuse.png");
     
     // Set normal mapping
-    // Texture2D normal_texture = LoadTexture("assets/textures/cgaxis_pbr_17_stone_wall_5_normal.png");
-    // model.materials[0].maps[MATERIAL_MAP_NORMAL].texture = normal_texture;
+    Texture2D normal_texture = LoadTexture("assets/textures/cgaxis_pbr_17_stone_wall_5_normal.png");
+
+    // GenMeshBinormals(model.meshes);
+    model.materials[0].maps[MATERIAL_MAP_NORMAL].texture = normal_texture;
+    
+
+    
 
     //==========Generate mesh and diffuse texture=========//
 
@@ -74,14 +79,17 @@ int main(void)
    
     //===================SELECT SHADERS====================//
 
-    // Shader shader = LoadShader("assets/shaders/base.vs", "assets/shaders/base.fs");
-    Shader shader = LoadShader("assets/shaders/specular.vs", "assets/shaders/specular.fs");
-    // Shader shader = LoadShader("assets/shaders/normal_mapping.vs", "assets/shaders/normal_mapping.fs");
+    // Shader shader = LoadShader("assets/shaders/base.vs", "assets/shaders/base.fs");                             // diffuse light
+    // Shader shader = LoadShader("assets/shaders/specular.vs", "assets/shaders/specular.fs");                  // diff + specular
+    Shader shader = LoadShader("assets/shaders/normal_mapping.vs", "assets/shaders/normal_mapping.fs");      // diff + spec + normal mapping
 
     // Set shader effect to 3d model
-    model.materials[0].shader = shader;                                         
+    model.materials[0].shader = shader;       
 
-    //==================Light======================
+
+
+    //==================Light======================//
+
     Vector3 sunPos = {0.0f, 2.0f, 0.0f };
     float rotation = 90.0f;
     float radius = 5.0f;
@@ -95,6 +103,8 @@ int main(void)
     int specularPosLoc = GetShaderLocation(shader, "viewPos");
     float specularPos[] = {camera.position.x, camera.position.y, camera.position.z};
     SetShaderValue(shader, specularPosLoc, specularPos, SHADER_UNIFORM_VEC3);
+
+    //===============================================//
 
 
     SetCameraMode(camera, CAMERA_FREE); // Set a free camera mode
@@ -118,7 +128,8 @@ int main(void)
             rotation += dt * 0.5f;
         }
         
-        //----------------------------------------------------------------------------------
+        //========================UPDATE LIGHT POSITION====================================//
+
         sunPos.x = cos(rotation) * radius;
         sunPos.z = sin(rotation) * radius;
 
@@ -140,7 +151,7 @@ int main(void)
                 DrawSphere(sunPos,1.0f,YELLOW);
 
                 
-                DrawModel(model, position, 20.0f, WHITE);        // Draw 3d model with texture
+                DrawModel(model, position, 2.0f, WHITE);        // Draw 3d model with texture
 
                 DrawGrid(10, 1.0f);
 

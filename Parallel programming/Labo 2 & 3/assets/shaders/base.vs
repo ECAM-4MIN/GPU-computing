@@ -7,7 +7,6 @@ in vec3 vertexNormal;
 in vec4 vertexColor;
 // added
 in vec4 vertexTangent;
-// in vec3 lightPos;  
 
 // Input uniform values
 uniform mat4 mvp;
@@ -17,7 +16,6 @@ out vec2 fragTexCoord;
 out vec4 fragColor;
 // added
 out vec3 fragPosition;
-out vec4 fragTangent;
 out vec3 fragNormal;
 
 
@@ -31,10 +29,7 @@ void main()
     //added
     fragNormal = vertexNormal;
     fragPosition = vertexPosition;
-    fragTangent = vertexTangent;
 
-    //=========ROTATING===============
-    // vec3 rotating_light = normalize( mRotations*vLight ).xyz;
 
     // Calculate final vertex position
     gl_Position = mvp*vec4(vertexPosition, 1.0);
