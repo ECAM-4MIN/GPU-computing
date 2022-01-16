@@ -7,6 +7,7 @@
 
 #include "Sphere.h"
 #include "ComputeVector.h"
+#include "Spring.h"
 
 Ball::Ball(Vector3 position, Vector3 speed,float radius) {
     this->position = position;
@@ -21,10 +22,6 @@ Ball::Ball(Vector3 position, Vector3 speed,float radius) {
     this->k1 = 0.95f * mult;
     this->k2 = 0.75f * mult;
     this->k3 = 0.50f * mult;
-
-    // this->k1 = 90.0f;
-    // this->k2 = 75.0f;
-    // this->k3 = 50.0f;
     
     this->resultingForces = {0.0f,0.0f,0.0f};
 
@@ -38,7 +35,7 @@ float round_float(float number){
     return (float)value / multiplier;
 }
 
-void Ball::set_neighboors(std::vector<Vector3> structural, std::vector<Vector3> shear, std::vector<Vector3> bend, bool first_setup){
+void Ball::set_springs(Spring structural,Spring shear, Spring bend, bool first_setup){
     ComputeVector comp = ComputeVector();
 
     this->structural = structural;
@@ -46,26 +43,10 @@ void Ball::set_neighboors(std::vector<Vector3> structural, std::vector<Vector3> 
     this->bend = bend;
 
     if(first_setup){
-
-        // sizes of the vectors
-        this->structuralSize = structural.size();
-        this->shearSize = shear.size();
-        this->bendSize = bend.size();
-        
-        // rest length between each particle and round to the fourth decimal
-        // this->structuralRestLen = round_float(abs(position.x - structural[0].x) + abs(position.z - structural[0].z));
-        // this->shearRestLen = round_float(sqrt(pow(position.x - shear[0].x,2) + pow(position.z - shear[0].z,2)));
-        // this->bendRestLen = round_float(abs(position.x - bend[0].x) + abs(position.z - bend[0].z));
-        this->structuralRestLen = round_float(comp.length(position,structural[0]));
-        this->shearRestLen = round_float(comp.length(position,shear[0]));
-        this->bendRestLen = round_float(comp.length(position,bend[0]));
-    }    
-}
-
-void Ball::set_neighboors_indices(std::vector<int> structural, std::vector<int> shear, std::vector<int> bend){
-    this->structural_neigh = structural;
-    this->shear_neigh = shear;
-    this->bend_neigh = bend;
+        this->structuralRestLen = round_float(comp.length(position,structural.get_positions()[0]));
+        this->shearRestLen = round_float(comp.length(position,shear.get_positions()[0]));
+        this->bendRestLen = round_float(comp.length(position,bend.get_positions()[0]));
+    }
 }
 
 
@@ -181,19 +162,13 @@ void Ball::update_forces(float cf, Vector3 sphere_pos, float sphere_radius){
     //============SPRINGS============//
 
     // structural
-
-    Vector3 fst = compute_spring(structuralSize, structural, structuralRestLen, k1);
-    // Vector3 fst = {0.0f,0.0f,0.0f};
+    Vector3 fst = compute_spring(structural.get_size(), structural.get_positions(), structural.get_speeds(), structuralRestLen, k1);
 
     // shear
-
-    Vector3 fsh = compute_spring(shearSize, shear, shearRestLen, k2);
-    // Vector3 fsh = {0.0f,0.0f,0.0f};
+    Vector3 fsh = compute_spring(shear.get_size(), shear.get_positions(),shear.get_speeds(), shearRestLen, k2);
 
     // bend
-
-    Vector3 fb = compute_spring(bendSize, bend, bendRestLen, k3);
-    // Vector3 fb = {0.0f,0.0f,0.0f};
+    Vector3 fb = compute_spring(bend.get_size(), bend.get_positions(), bend.get_speeds(), bendRestLen, k3);
 
 
     //===========RESULTING===========//
@@ -206,15 +181,17 @@ void Ball::update_forces(float cf, Vector3 sphere_pos, float sphere_radius){
 
 }
 
-Vector3 Ball::compute_spring(int neighboorSize, std::vector<Vector3> neighbors, float restLen, float k){
+Vector3 Ball::compute_spring(int neighboorSize, std::vector<Vector3> positions, std::vector<Vector3> speeds, float restLen, float k){
     ComputeVector comp = ComputeVector();
     Vector3 totForces = {0.0f, 0.0f, 0.0f};
+
+    float cd = 0.5f;
 
     for (int i = 0; i< neighboorSize; i++){
 
         // L2 = ||p2 - p1|| and L3 = ||p3 - p1||
         float L2 = restLen;
-        float L3 = comp.length(position, neighbors[i]);
+        float L3 = comp.length(position, positions[i]);
         L3 = round_float(L3);
 
         if (L3 !=- L2){
@@ -223,23 +200,39 @@ Vector3 Ball::compute_spring(int neighboorSize, std::vector<Vector3> neighbors, 
 
             // points
             Vector3 p1 = position;
-            Vector3 p3 = neighbors[i];
+            Vector3 p3 = positions[i];
 
             // L3_unit = unit vector of p3 - p1
             Vector3 L3_v = comp.subbstract(p3, p1);
             Vector3 L3_unit = comp.normalize(L3_v);
 
             // Fk = k * dl * unit vector
-            Vector3 Fk = comp.f_multiply(L3_unit, k * dl);
+            float Fk_len = k * dl;
+            Vector3 Fk = comp.f_multiply(L3_unit,Fk_len);
 
             //=============== DAMPEN ===============//
+
+            Vector3 v1 = speed;
+            Vector3 v3 = speeds[i];
+            Vector3 v = comp.subbstract(v3,v1);
+
+            // Vector3 Fk_unit = comp.normalize(Fk);
+            // float Fk_len = comp.length(Fk);
+
+            float v_k = comp.dot_product(L3_unit,v);
+
+            float df = v_k * cd;
+            if (df > 2 * Fk_len ){
+                df = 2 * Fk_len;
+            }
+            Vector3 Cd = comp.f_multiply(L3_unit,df);
 
             // float df = comp.length(speed) * 
             // if (Cd_len > 2* comp.length(Fk)){
             //     Cd = comp.f_multiply(Fk,2);
             // } 
 
-            Vector3 Cd = comp.f_multiply(speed,0.5f);
+            // Vector3 Cd = comp.f_multiply(speed,0.5f);
             Fk = comp.subbstract(Fk, Cd);  
             
 
@@ -254,18 +247,18 @@ Vector3 Ball::compute_spring(int neighboorSize, std::vector<Vector3> neighbors, 
 
 
 
-
-std::vector<int> Ball::get_neighboors_indices(int type){
-    if(type == 0){
-        return structural_neigh;
+Spring Ball::get_spring(std::string type){
+    if (type == "structural"){
+        return structural;
     }
-    else if(type == 1){
-        return shear_neigh;
+    else if (type == "shear"){
+        return shear;
     }
     else{
-        return shear_neigh;
+        return bend;
     }
 }
+
 Vector3 Ball::get_position(){
     return position;
 }
