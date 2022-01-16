@@ -14,12 +14,13 @@ Ball::Ball(Vector3 position, Vector3 speed,float radius) {
     this->radius = radius;
 
     // this->mass = 0.1f;
-    this->mass = 0.05f;
+    this->mass = 0.15f;
     this->isFalling = true;
-
-    this->k1 = 0.95f;
-    this->k2 = 0.75f;
-    this->k3 = 0.50f;
+    
+    int mult = 25;
+    this->k1 = 0.95f * mult;
+    this->k2 = 0.75f * mult;
+    this->k3 = 0.50f * mult;
 
     // this->k1 = 90.0f;
     // this->k2 = 75.0f;
@@ -38,6 +39,8 @@ float round_float(float number){
 }
 
 void Ball::set_neighboors(std::vector<Vector3> structural, std::vector<Vector3> shear, std::vector<Vector3> bend, bool first_setup){
+    ComputeVector comp = ComputeVector();
+
     this->structural = structural;
     this->shear = shear;
     this->bend = bend;
@@ -50,9 +53,12 @@ void Ball::set_neighboors(std::vector<Vector3> structural, std::vector<Vector3> 
         this->bendSize = bend.size();
         
         // rest length between each particle and round to the fourth decimal
-        this->structuralRestLen = round_float(abs(position.x - structural[0].x) + abs(position.z - structural[0].z));
-        this->shearRestLen = round_float(sqrt(pow(position.x - shear[0].x,2) + pow(position.z - shear[0].z,2)));
-        this->bendRestLen = round_float(abs(position.x - bend[0].x) + abs(position.z - bend[0].z));
+        // this->structuralRestLen = round_float(abs(position.x - structural[0].x) + abs(position.z - structural[0].z));
+        // this->shearRestLen = round_float(sqrt(pow(position.x - shear[0].x,2) + pow(position.z - shear[0].z,2)));
+        // this->bendRestLen = round_float(abs(position.x - bend[0].x) + abs(position.z - bend[0].z));
+        this->structuralRestLen = round_float(comp.length(position,structural[0]));
+        this->shearRestLen = round_float(comp.length(position,shear[0]));
+        this->bendRestLen = round_float(comp.length(position,bend[0]));
     }    
 }
 
@@ -111,20 +117,13 @@ void Ball::update_collisions(Vector3 sphere_pos, float sphere_radius, float dt){
         Vector3 cs_unit = comp.normalize(cs);
         
         // reposition the particle on the surface of the sphere
-        Vector3 new_pos = {
-            sphere_pos.x + sphere_radius * cs_unit.x,
-            sphere_pos.y + sphere_radius * cs_unit.y,
-            sphere_pos.z + sphere_radius * cs_unit.z,
-        };
+        Vector3 new_pos = comp.add(sphere_pos,comp.f_multiply(cs_unit,sphere_radius));
 
-        //new speed and pos
+        // speed
+        speed = comp.add(comp.f_divide(comp.subbstract(new_pos,position),dt), speed);
+
+        // update pos
         position = new_pos;
-
-        speed = {
-            speed.x + (new_pos.x - position.x) / dt,
-            speed.y + (new_pos.y - position.y) / dt,
-            speed.z + (new_pos.z - position.z) / dt,
-        };
     }
     else{
         isFalling = true;
@@ -133,74 +132,40 @@ void Ball::update_collisions(Vector3 sphere_pos, float sphere_radius, float dt){
 
 
 Vector3 Ball::compute_friction(float cf, Vector3 sphere_pos, float sphere_radius){
-    Vector3 ff = {0.0f, 0.0f, 0.0f};
+    ComputeVector comp = ComputeVector();
+    Vector3 Fres = {0.0f, 0.0f, 0.0f};
 
-    // cs : distance between the particle and the sphere for each axis
-    Vector3 cs = {
-        position.x - sphere_pos.x,
-        position.y - sphere_pos.y,
-        position.z - sphere_pos.z
-    };
+    float mu_s = 0.74f; // static coef
+    float mu_k = cf;    //kinetic coef
 
-    // as it is already on the sphere
-    float n_norm = sphere_radius;
-
+    // if in contact with the sphere
     if(!isFalling){
 
-        // find unit vector 1n wich points towards the center of the sphere    
-        Vector3 n_unit = {
-            cs.x / n_norm,
-            cs.y / n_norm,
-            cs.z / n_norm
-        };
+        // cs = vector between particle and center of sphere
+        Vector3 cs = comp.subbstract(position, sphere_pos);
+        Vector3 cs_unit = comp.normalize(cs);
 
-        //find Rn = (Resulting dot 1n) * 1n
-        float r_dot = resultingForces.x * n_unit.x +
-                        resultingForces.y * n_unit.y +
-                        resultingForces.z * n_unit.z;
-        Vector3 rn = {
-            r_dot * n_unit.x,
-            r_dot * n_unit.y,
-            r_dot * n_unit.z
-        };
+        // Fn = Force perpendicular to the surface
+        Vector3 Fn = comp.f_multiply(cs_unit,comp.dot_product(resultingForces, cs_unit));
+        float Fn_len = comp.length(Fn);
 
-        float rn_norm = sqrt(
-            pow(rn.x,2.0f) + 
-            pow(rn.y,2.0f) +
-            pow(rn.z,2.0f)
-        );
+        // Ft = tangent force to the surface
+        Vector3 Ft = comp.subbstract(resultingForces, Fn);
+        Vector3 Ft_unit = comp.normalize(Ft);
+        float Ft_len = comp.length(Ft);
 
-        // Rt = Resulting - Ron
-        Vector3 rt = {
-            resultingForces.x - rn.x,
-            resultingForces.y - rn.y,
-            resultingForces.z - rn.z
-        };
+        // k = friction coef : mu_k if kinetic and mu_s if static
+        float k = mu_k;
+        if(comp.length(speed) == 0){
+            k = mu_s;
+        }
 
-        // 1Rt = unit vector which is tangent to the sphere
-        float rt_norm = sqrt(
-            pow(rt.x,2.0f) + 
-            pow(rt.y,2.0f) +
-            pow(rt.z,2.0f)
-        );
-
-        Vector3 rt_unit = {
-            rt.x / rt_norm,
-            rt.y / rt_norm,
-            rt.z / rt_norm
-        };
-
-        // calculate friction :
-        float mini = - std::min(rt_norm, cf * rn_norm);
-        ff = {
-            mini * rt_unit.x,
-            mini * rt_unit.y,
-            mini * rt_unit.z
-        };
-
+        // Ff = Friction force, opposed to Ft
+        Vector3 Ff = comp.f_multiply(Ft_unit, std::min(Ft_len,k * Fn_len));
+        Fres = comp.subbstract(Ft, Ff);
     }
 
-    return ff;
+    return Fres;
 }
 
 void Ball::update_forces(float cf, Vector3 sphere_pos, float sphere_radius){
@@ -211,110 +176,81 @@ void Ball::update_forces(float cf, Vector3 sphere_pos, float sphere_radius){
 
     //==========Friction============//
 
-    Vector3 ff = compute_friction(3.3f, sphere_pos, sphere_radius);
+    Vector3 ff = compute_friction(cf, sphere_pos, sphere_radius);
 
     //============SPRINGS============//
-   
 
     // structural
 
-    // Vector3 fst = compute_spring(structuralSize, structural, structuralRestLen, k1);
-    Vector3 fst = {0.0f,0.0f,0.0f};
+    Vector3 fst = compute_spring(structuralSize, structural, structuralRestLen, k1);
+    // Vector3 fst = {0.0f,0.0f,0.0f};
 
     // shear
 
-    // Vector3 fsh = compute_spring(shearSize, shear, shearRestLen, k2);
-    Vector3 fsh = {0.0f,0.0f,0.0f};
+    Vector3 fsh = compute_spring(shearSize, shear, shearRestLen, k2);
+    // Vector3 fsh = {0.0f,0.0f,0.0f};
 
     // bend
 
-    // Vector3 fb = compute_spring(bendSize, bend, bendRestLen, k3);
-    Vector3 fb = {0.0f,0.0f,0.0f};
+    Vector3 fb = compute_spring(bendSize, bend, bendRestLen, k3);
+    // Vector3 fb = {0.0f,0.0f,0.0f};
 
-    // damping
-
-    Vector3 fd = {0.0f, 0.0f, 0.0f};   
-
-    // should be between 0 and 1 
-    float cd = 0.9f;
-
-    // if ((   fst.x + fst.y + fst.z != 0.0f) or 
-    //     (   fsh.x + fsh.y + fsh.z != 0.0f ) or 
-    //     (   fb.x  + fb.y  + fb.z  != 0.0f) ){
-    //     fd = {
-    //         - speed.x * cd,
-    //         - speed.y * cd,
-    //         - speed.z * cd
-    //     };
-    // } 
 
     //===========RESULTING===========//
 
     resultingForces = {
-        ff.x ,//+ fst.x + fsh.x + fd.x,
-        ff.y + fg,// + fst.y + fsh.y + fd.y + fg ,
-        ff.z //+ fst.z + fsh.z + fd.z
+        ff.x + fst.x + fsh.x,
+        ff.y + fst.y + fsh.y + fg ,
+        ff.z + fst.z + fsh.z
     };
-
-    
 
 }
 
 Vector3 Ball::compute_spring(int neighboorSize, std::vector<Vector3> neighbors, float restLen, float k){
-        Vector3 totForces = {0.0f, 0.0f, 0.0f};
+    ComputeVector comp = ComputeVector();
+    Vector3 totForces = {0.0f, 0.0f, 0.0f};
 
-        for (int i = 0; i< neighboorSize; i++){
+    for (int i = 0; i< neighboorSize; i++){
 
-            float dist = sqrt(
-                pow(position.x - neighbors[i].x,2) +
-                pow(position.y - neighbors[i].y,2) +
-                pow(position.z - neighbors[i].z,2)
-            );
-            dist = round_float(dist);
+        // L2 = ||p2 - p1|| and L3 = ||p3 - p1||
+        float L2 = restLen;
+        float L3 = comp.length(position, neighbors[i]);
+        L3 = round_float(L3);
+
+        if (L3 !=- L2){
             
-            // std::cout<< round_float(dist) << " ";
+            float dl = L3 - L2;
 
-            //==========================THE IF IS THE SOURCE OF THE PROBLEM===================
-            if ((dist - restLen) != 0.0f){
+            // points
+            Vector3 p1 = position;
+            Vector3 p3 = neighbors[i];
 
-                // itself pos
-                Vector3 p1 = position;
+            // L3_unit = unit vector of p3 - p1
+            Vector3 L3_v = comp.subbstract(p3, p1);
+            Vector3 L3_unit = comp.normalize(L3_v);
 
-                // neighboor pos
-                Vector3 p3 = neighbors[i];
-                float p3_norm = sqrt(
-                    pow(p1.x - p3.x,2) +
-                    pow(p1.y - p3.y,2) +
-                    pow(p1.z - p3.z,2)
-                );
-                Vector3 p3_unit = {
-                    (p1.x - p3.x) / p3_norm,
-                    (p1.y - p3.y) / p3_norm,
-                    (p1.z - p3.z) / p3_norm,
-                }; 
+            // Fk = k * dl * unit vector
+            Vector3 Fk = comp.f_multiply(L3_unit, k * dl);
 
-                // resting pos
-                Vector3 p2 = {
-                    - restLen * p3_unit.x,
-                    - restLen * p3_unit.y,
-                    - restLen * p3_unit.z
-                };
-                
-                
-                // F structural = - k * dl
-                Vector3 f = {
-                    k * (p2.x - p3.x),
-                    k * (p2.y - p3.y),
-                    k * (p2.z - p3.z)
-                };
-                totForces.x += f.x;
-                totForces.y += f.y;
-                totForces.z += f.z;
+            //=============== DAMPEN ===============//
 
-            }
+            // float df = comp.length(speed) * 
+            // if (Cd_len > 2* comp.length(Fk)){
+            //     Cd = comp.f_multiply(Fk,2);
+            // } 
+
+            Vector3 Cd = comp.f_multiply(speed,0.5f);
+            Fk = comp.subbstract(Fk, Cd);  
+            
+
+            totForces = comp.add(totForces,Fk);
         }
-        return totForces;
     }
+    // //=============== DAMPEN ===============//
+    // Vector3 Cd = comp.f_multiply(speed,0.5f * neighboorSize);
+    // totForces = comp.subbstract(totForces, Cd);  
+    return totForces;
+}
 
 
 

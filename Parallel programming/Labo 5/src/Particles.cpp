@@ -1,6 +1,5 @@
 #include "Particles.h"
 
-
 #include <raymath.h>
 #include <rlgl.h>
 #include <string>
@@ -25,7 +24,7 @@ Particles::Particles(int ball_quantity, float start_height, float radius) {
     for(int i=0; i<quantity; i++) {
         Vector3 speed = {0.0f, 0.0f, 0.0f };       
 
-        Ball ball = Ball({x/4, start_height, z/4},speed,radius);
+        Ball ball = Ball({x/3, start_height, z/3},speed,radius);
         particles.push_back(ball);
 
         // set positions
@@ -138,14 +137,6 @@ void Particles::render_particles(){
             }
         }
     }
-    
-    // for (int i = 0; i < quantity; i ++){
-    //     DrawSphere(particles[i].get_position(), particles[i].get_radius(), BLUE);
-    //     // if (i <= quantity -1){
-    //     //     DrawLine3D(particles[i].get_position(),particles[i+1].get_position(),BLUE);
-    //     // }
-        
-    // }
 }
 
 
