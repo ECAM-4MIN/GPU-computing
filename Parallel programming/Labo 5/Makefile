@@ -10,8 +10,8 @@ CFLAGS  = -g -Wall
 TARGET = build /app
 
 #NEW
-app: build/main.o build/ball.o build/particles.o build/sphere.o
-	$(CC) $(CFLAGS) -o app build/main.o build/ball.o build/particles.o build/sphere.o -lraylib
+app: build/main.o build/ball.o build/particles.o build/sphere.o build/vector.o build/spring.o
+	$(CC) $(CFLAGS) -o app build/main.o build/ball.o build/particles.o build/sphere.o build/vector.o build/spring.o -lraylib
 
 build/main.o: main.cpp
 	$(CC) $(CFLAGS) -c -o build/main.o main.cpp
@@ -24,6 +24,12 @@ build/particles.o: src/Particles.cpp src/Particles.h
 
 build/sphere.o: src/Sphere.cpp src/Sphere.h
 	$(CC) -c -o build/sphere.o src/Sphere.cpp 
+
+build/vector.o: src/ComputeVector.cpp src/ComputeVector.h
+	$(CC) -c -o build/vector.o src/ComputeVector.cpp 
+
+build/spring.o: src/Spring.cpp src/Spring.h
+	$(CC) -c -o build/spring.o src/Spring.cpp 
 
 clean:
 	rm -f *.o
