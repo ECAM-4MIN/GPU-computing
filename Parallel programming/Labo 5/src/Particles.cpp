@@ -25,7 +25,7 @@ Particles::Particles(int ball_quantity, float start_height, float radius) {
     for(int i=0; i<quantity; i++) {
         Vector3 speed = {0.0f, 0.0f, 0.0f };       
 
-        Ball ball = Ball({x/3, start_height, z/3},speed,radius);
+        Ball ball = Ball({x, start_height, z},speed,radius);
         particles.push_back(ball);
 
         // set positions
@@ -120,6 +120,9 @@ void Particles::render_particles(){
             if (i < side_qty -1){
                 DrawLine3D(particles[j + side_qty * i].get_position(),particles[j + side_qty * (i + 1)].get_position(),BLUE);
             }
+            // if (i+1 == j ){
+            //     DrawLine3D(particles[j + side_qty * i].get_position(),particles[j + side_qty * (i + 1)].get_position(),BLUE);
+            // }
         }
     }
 }

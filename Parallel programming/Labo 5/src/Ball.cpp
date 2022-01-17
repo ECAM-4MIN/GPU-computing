@@ -15,7 +15,7 @@ Ball::Ball(Vector3 position, Vector3 speed,float radius) {
     this->radius = radius;
 
     // this->mass = 0.1f;
-    this->mass = 0.15f;
+    this->mass = 0.2f;
     this->isFalling = true;
     
     int mult = 25;
@@ -27,14 +27,6 @@ Ball::Ball(Vector3 position, Vector3 speed,float radius) {
 
 }
 
-float round_float(float number){
-    int decimal = 4;
-    int multiplier = pow(10,decimal);
-
-    float value = (int)(number * multiplier + .5);
-    return (float)value / multiplier;
-}
-
 void Ball::set_springs(Spring structural,Spring shear, Spring bend, bool first_setup){
     ComputeVector comp = ComputeVector();
 
@@ -43,9 +35,9 @@ void Ball::set_springs(Spring structural,Spring shear, Spring bend, bool first_s
     this->bend = bend;
 
     if(first_setup){
-        this->structuralRestLen = round_float(comp.length(position,structural.get_positions()[0]));
-        this->shearRestLen = round_float(comp.length(position,shear.get_positions()[0]));
-        this->bendRestLen = round_float(comp.length(position,bend.get_positions()[0]));
+        this->structuralRestLen = (comp.length(position,structural.get_positions()[0]));
+        this->shearRestLen = (comp.length(position,shear.get_positions()[0]));
+        this->bendRestLen = (comp.length(position,bend.get_positions()[0]));
     }
 }
 
@@ -62,9 +54,9 @@ void Ball::update_position(float dt){
 
     // position :  x(t) = x0 + v0 * dt + 1/2 * a * dt²
 
-    position.x += speed.x * dt + 0.5f * a.x * pow(dt,2);
-    position.y += speed.y * dt + 0.5f * a.y * pow(dt,2);
-    position.z += speed.z * dt + 0.5f * a.z * pow(dt,2);
+    // position.x += speed.x * dt + 0.5f * a.x * pow(dt,2);
+    // position.y += speed.y * dt + 0.5f * a.y * pow(dt,2);
+    // position.z += speed.z * dt + 0.5f * a.z * pow(dt,2);
 
     // speed
 
@@ -74,9 +66,9 @@ void Ball::update_position(float dt){
 
     // position (not really correct=> the 1/2 is missing)
 
-    // position.x += speed.x * dt;
-    // position.y += speed.y * dt; 
-    // position.z += speed.z * dt;
+    position.x += speed.x * dt;
+    position.y += speed.y * dt; 
+    position.z += speed.z * dt;
 
 }
 
@@ -185,14 +177,16 @@ Vector3 Ball::compute_spring(int neighboorSize, std::vector<Vector3> positions, 
     ComputeVector comp = ComputeVector();
     Vector3 totForces = {0.0f, 0.0f, 0.0f};
 
-    float cd = 0.5f;
+    // critically damped
+    // float cd = sqrt(4.0f * k * mass);
+    float cd = 0.70f;
 
     for (int i = 0; i< neighboorSize; i++){
 
         // L2 = ||p2 - p1|| and L3 = ||p3 - p1||
         float L2 = restLen;
         float L3 = comp.length(position, positions[i]);
-        L3 = round_float(L3);
+        L3 = L3;
 
         if (L3 !=- L2){
             
@@ -212,36 +206,18 @@ Vector3 Ball::compute_spring(int neighboorSize, std::vector<Vector3> positions, 
 
             //=============== DAMPEN ===============//
 
+            // speed diff between the 2 particles
             Vector3 v1 = speed;
             Vector3 v3 = speeds[i];
-            Vector3 v = comp.subbstract(v3,v1);
+            Vector3 v = comp.subbstract(v1,v3);
 
-            // Vector3 Fk_unit = comp.normalize(Fk);
-            // float Fk_len = comp.length(Fk);
-
-            float v_k = comp.dot_product(L3_unit,v);
-
-            float df = v_k * cd;
-            if (df > 2 * Fk_len ){
-                df = 2 * Fk_len;
-            }
-            Vector3 Cd = comp.f_multiply(L3_unit,df);
-
-            // float df = comp.length(speed) * 
-            // if (Cd_len > 2* comp.length(Fk)){
-            //     Cd = comp.f_multiply(Fk,2);
-            // } 
-
-            // Vector3 Cd = comp.f_multiply(speed,0.5f);
-            Fk = comp.subbstract(Fk, Cd);  
+            Vector3 Fd = comp.f_multiply(v, - cd);
+            Fk = comp.add(Fk, Fd);  
             
 
             totForces = comp.add(totForces,Fk);
         }
     }
-    // //=============== DAMPEN ===============//
-    // Vector3 Cd = comp.f_multiply(speed,0.5f * neighboorSize);
-    // totForces = comp.subbstract(totForces, Cd);  
     return totForces;
 }
 

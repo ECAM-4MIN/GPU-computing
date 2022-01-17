@@ -23,18 +23,15 @@ int main(void)
     //Pause game
     bool pause = 1;
     int framesCounter = 0;
-    float dt = 0;
+    float dt = 0.01f;
     srand(time(0));
 
     //Tissue
 
-    Particles tissue = Particles(100, 4.0f, 0.05f);
-
-   
+    Particles tissue = Particles(100, 6.0f, 0.05f);
 
     // sphere
-    // at (0,0,0) the middle point disappears misteriousely
-    Sphere sphere = Sphere({0.0f,0.0f,0.0f},1.5f,0.57f);
+    Sphere sphere = Sphere({0.0f,0.0f,0.0f},3.0f,0.57f);
 
     //camera
 
@@ -65,7 +62,8 @@ int main(void)
 
         if (!pause)
         {
-            dt = GetFrameTime();
+            // dt = GetFrameTime();
+            // dt = 0.01
 
             tissue.move_particles(dt,sphere);
 
