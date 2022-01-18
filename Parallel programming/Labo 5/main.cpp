@@ -28,10 +28,10 @@ int main(void)
 
     //Tissue
 
-    Particles tissue = Particles(100, 6.0f, 0.05f);
+    Particles tissue = Particles(100, 5.0f, 0.05f);
 
     // sphere
-    Sphere sphere = Sphere({0.0f,0.0f,0.0f},3.0f,0.57f);
+    Sphere sphere = Sphere({0.05f,0.0f,0.0f},2.5f,0.57f);
 
     //camera
 

@@ -25,7 +25,7 @@ Particles::Particles(int ball_quantity, float start_height, float radius) {
     for(int i=0; i<quantity; i++) {
         Vector3 speed = {0.0f, 0.0f, 0.0f };       
 
-        Ball ball = Ball({x, start_height, z},speed,radius);
+        Ball ball = Ball({x + 0.5f, start_height, z + 0.5f},speed,radius);
         particles.push_back(ball);
 
         // set positions
@@ -107,26 +107,34 @@ void Particles::add_neighboors(bool first_setup){
     }
 }
 
+
 void Particles::render_particles(){
     int side_qty = (int)sqrt(quantity);
 
     for (int i=0; i< side_qty; i++){
         for(int j=0; j<side_qty; j++){
+
             DrawSphere(particles[j + side_qty * i].get_position(), particles[i].get_radius(), BLUE);
 
+            // vertical lines
             if (j < side_qty -1){
                 DrawLine3D(particles[j + side_qty * i].get_position(),particles[j + side_qty * i + 1].get_position(),BLUE);
             }
+            // horizontal lines
             if (i < side_qty -1){
                 DrawLine3D(particles[j + side_qty * i].get_position(),particles[j + side_qty * (i + 1)].get_position(),BLUE);
             }
-            // if (i+1 == j ){
-            //     DrawLine3D(particles[j + side_qty * i].get_position(),particles[j + side_qty * (i + 1)].get_position(),BLUE);
-            // }
+            // diagonal lines
+            if (j < side_qty -1 and i < side_qty -1 ){
+                DrawLine3D(particles[j + side_qty * i].get_position(),particles[j + 1 + side_qty * (i + 1)].get_position(),BLUE);                  
+                            
+            }
+            if (j >0 and i < side_qty -1 ){
+                DrawLine3D(particles[j + side_qty * i].get_position(),particles[j - 1 + side_qty * (i + 1)].get_position(),BLUE);
+            }
         }
     }
 }
-
 
 void Particles::move_particles(float dt, Sphere sphere){
 

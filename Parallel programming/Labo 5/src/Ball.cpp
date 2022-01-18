@@ -14,21 +14,19 @@ Ball::Ball(Vector3 position, Vector3 speed,float radius) {
     this->speed = speed;
     this->radius = radius;
 
-    // this->mass = 0.1f;
     this->mass = 0.2f;
     this->isFalling = true;
     
-    int mult = 25;
+    int mult = 50;
     this->k1 = 0.95f * mult;
     this->k2 = 0.75f * mult;
     this->k3 = 0.50f * mult;
     
     this->resultingForces = {0.0f,0.0f,0.0f};
-
+    this->comp = ComputeVector();
 }
 
 void Ball::set_springs(Spring structural,Spring shear, Spring bend, bool first_setup){
-    ComputeVector comp = ComputeVector();
 
     this->structural = structural;
     this->shear = shear;
@@ -44,36 +42,13 @@ void Ball::set_springs(Spring structural,Spring shear, Spring bend, bool first_s
 
 void Ball::update_position(float dt){
     
-    // acceleration
-
-    Vector3 a = {
-        resultingForces.x / mass,
-        resultingForces.y / mass,
-        resultingForces.z / mass
-    };
-
-    // position :  x(t) = x0 + v0 * dt + 1/2 * a * dt²
-
-    // position.x += speed.x * dt + 0.5f * a.x * pow(dt,2);
-    // position.y += speed.y * dt + 0.5f * a.y * pow(dt,2);
-    // position.z += speed.z * dt + 0.5f * a.z * pow(dt,2);
-
-    // speed
-
-    speed.x += dt * a.x;
-    speed.y += dt * a.y;
-    speed.z += dt * a.z;
-
-    // position (not really correct=> the 1/2 is missing)
-
-    position.x += speed.x * dt;
-    position.y += speed.y * dt; 
-    position.z += speed.z * dt;
+    Vector3 a = comp.f_divide(resultingForces, mass);    
+    speed = comp.add(speed, comp.f_multiply(a, dt));
+    position = comp.add(position, comp.f_multiply(speed, dt));
 
 }
 
 void Ball::update_collisions(Vector3 sphere_pos, float sphere_radius, float dt){    
-    ComputeVector comp = ComputeVector();
 
     // cs : distance between the particle and the sphere for each axis
     Vector3 cs = comp.subbstract(position, sphere_pos);
@@ -105,7 +80,7 @@ void Ball::update_collisions(Vector3 sphere_pos, float sphere_radius, float dt){
 
 
 Vector3 Ball::compute_friction(float cf, Vector3 sphere_pos, float sphere_radius){
-    ComputeVector comp = ComputeVector();
+
     Vector3 Fres = {0.0f, 0.0f, 0.0f};
 
     float mu_s = 0.74f; // static coef
@@ -174,7 +149,7 @@ void Ball::update_forces(float cf, Vector3 sphere_pos, float sphere_radius){
 }
 
 Vector3 Ball::compute_spring(int neighboorSize, std::vector<Vector3> positions, std::vector<Vector3> speeds, float restLen, float k){
-    ComputeVector comp = ComputeVector();
+
     Vector3 totForces = {0.0f, 0.0f, 0.0f};
 
     // critically damped
@@ -186,9 +161,8 @@ Vector3 Ball::compute_spring(int neighboorSize, std::vector<Vector3> positions, 
         // L2 = ||p2 - p1|| and L3 = ||p3 - p1||
         float L2 = restLen;
         float L3 = comp.length(position, positions[i]);
-        L3 = L3;
 
-        if (L3 !=- L2){
+        if (L3 != L2){
             
             float dl = L3 - L2;
 
@@ -211,17 +185,14 @@ Vector3 Ball::compute_spring(int neighboorSize, std::vector<Vector3> positions, 
             Vector3 v3 = speeds[i];
             Vector3 v = comp.subbstract(v1,v3);
 
-            Vector3 Fd = comp.f_multiply(v, - cd);
-            Fk = comp.add(Fk, Fd);  
-            
+            Vector3 Fd = comp.f_multiply(v,cd);
+            Fk = comp.subbstract(Fk, Fd);              
 
             totForces = comp.add(totForces,Fk);
         }
     }
     return totForces;
 }
-
-
 
 Spring Ball::get_spring(std::string type){
     if (type == "structural"){

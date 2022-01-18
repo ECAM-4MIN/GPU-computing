@@ -5,6 +5,7 @@
 
 #include "Sphere.h"
 #include "Spring.h"
+#include "ComputeVector.h"
 
 class Ball {
     private:
@@ -33,7 +34,7 @@ class Ball {
         Vector3 compute_spring(int neighboorSize, std::vector<Vector3> positions, std::vector<Vector3> speeds, float restLen, float k);
         Vector3 compute_friction(float cf, Vector3 sphere_pos, float sphere_radius);
 
-        
+        ComputeVector comp;
 
     public:
         Ball(Vector3 position, Vector3 speed,float radius);
