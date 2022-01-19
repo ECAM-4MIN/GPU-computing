@@ -9,6 +9,7 @@
 // #include "src/Ball.h"
 #include "src/Particles.h"
 #include "src/Sphere.h"
+#include "src/ComputeVector.h"
 
 
 int main(void)
@@ -31,7 +32,7 @@ int main(void)
     Particles tissue = Particles(100, 5.0f, 0.05f);
 
     // sphere
-    Sphere sphere = Sphere({0.05f,0.0f,0.0f},2.5f,0.57f);
+    Sphere sphere = Sphere({0.0f,0.0f,0.0f},2.5f,0.57f);
 
     //camera
 
@@ -44,7 +45,8 @@ int main(void)
     SetCameraMode(camera, CAMERA_FREE);                 // Set a free camera mode
 
     
-    
+    // comp
+    ComputeVector comp = ComputeVector();
 
     SetTargetFPS(100);               // Set our game to run at 60 frames-per-second
     //----------------------------------------------------------
@@ -56,17 +58,24 @@ int main(void)
         //-----------------------------------------------------
         UpdateCamera(&camera);          // Update camera
 
-        if (IsKeyDown('Z')) camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
+        if (IsKeyDown('X')) camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
+        if (IsKeyDown('R')) tissue = Particles(100, 5.0f, 0.05f);
+
+        Vector3 spherePos = sphere.get_position();
+        if (IsKeyDown('A')) spherePos = comp.add(spherePos, {0.10f, 0.0f, 0.0f});
+        if (IsKeyDown('D')) spherePos = comp.add(spherePos, {-0.10f, 0.0f, 0.0f});
+        if (IsKeyDown('W')) spherePos = comp.add(spherePos, {0.0f, 0.0f, 0.10f});
+        if (IsKeyDown('S')) spherePos = comp.add(spherePos, {0.0f, 0.0f, -0.10f});
+
+        if (comp.length(spherePos, sphere.get_position()) != 0){
+            sphere.set_position(spherePos);
+        }
 
         if (IsKeyPressed(KEY_SPACE)) pause = !pause;
 
         if (!pause)
         {
-            // dt = GetFrameTime();
-            // dt = 0.01
-
             tissue.move_particles(dt,sphere);
-
 
         }
         else {
@@ -87,19 +96,13 @@ int main(void)
                 tissue.render_particles();
 
 
-                DrawGrid(10, 1.0f);
+                // DrawGrid(10, 1.0f);
 
             EndMode3D();
 
 
             // On pause, we draw a blinking message
             if (pause && ((framesCounter/30)%2)) DrawText("PAUSED", 350, 200, 30, GRAY);
-
-            //test
-            //dt += GetFrameTime();
-            std::string s = std::to_string(dt);
-            char const *pchar = s.c_str();  //use char const* as target type
-            DrawText(pchar, 10, GetScreenHeight() - 25, 20, LIGHTGRAY);
 
             DrawFPS(10, 10);
 

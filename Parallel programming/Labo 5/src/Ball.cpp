@@ -17,7 +17,7 @@ Ball::Ball(Vector3 position, Vector3 speed,float radius) {
     this->mass = 0.2f;
     this->isFalling = true;
     
-    int mult = 50;
+    int mult = 70;
     this->k1 = 0.95f * mult;
     this->k2 = 0.75f * mult;
     this->k3 = 0.50f * mult;

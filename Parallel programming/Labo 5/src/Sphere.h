@@ -14,6 +14,7 @@ class Sphere {
         Sphere() = default;
 
         void draw_sphere();
+        void set_position(Vector3 position);
         
         float get_radius();
         Vector3 get_position();  

@@ -80,8 +80,8 @@ int main(void)
     //===================SELECT SHADERS====================//
 
     // Shader shader = LoadShader("assets/shaders/base.vs", "assets/shaders/base.fs");                             // diffuse light
-    // Shader shader = LoadShader("assets/shaders/specular.vs", "assets/shaders/specular.fs");                  // diff + specular
-    Shader shader = LoadShader("assets/shaders/normal_mapping.vs", "assets/shaders/normal_mapping.fs");      // diff + spec + normal mapping
+    Shader shader = LoadShader("assets/shaders/specular.vs", "assets/shaders/specular.fs");                  // diff + specular
+    // Shader shader = LoadShader("assets/shaders/normal_mapping.vs", "assets/shaders/normal_mapping.fs");      // diff + spec + normal mapping
 
     // Set shader effect to 3d model
     model.materials[0].shader = shader;       

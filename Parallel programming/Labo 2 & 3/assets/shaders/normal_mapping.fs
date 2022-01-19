@@ -55,8 +55,8 @@ void main()
     // transform normal vector to range [-1,1]
     vec3 normalMap = normalize(normalColor * 2.0 - 1.0); 
 
-    vec3 normal = normalize(matNormal * normalMap);
-    vec3 tangent = normalize(matNormal * fragTangent.xyz);
+    vec3 normal = normalize(normalMap * worldNormal);
+    vec3 tangent = normalize(normalMap * fragTangent.xyz);
     vec3 binormal = normalize(cross(normal, tangent));
 
     mat3 TBN = mat3(tangent, binormal, worldNormal);

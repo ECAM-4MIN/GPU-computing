@@ -13,6 +13,9 @@ void Sphere::draw_sphere(){
     Color color = Color{200,20,20, 200};
     DrawSphere(position,radius, color);
 }
+void Sphere::set_position(Vector3 position){
+    this->position = position;
+}
 
 
 Vector3 Sphere::get_position(){
