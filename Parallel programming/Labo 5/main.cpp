@@ -28,8 +28,8 @@ int main(void)
     srand(time(0));
 
     //Tissue
-
-    Particles tissue = Particles(100, 5.0f, 0.05f);
+    int numberOfParticles = 144;
+    Particles tissue = Particles(numberOfParticles, 5.0f, 0.05f);
 
     // sphere
     Sphere sphere = Sphere({0.0f,0.0f,0.0f},2.5f,0.57f);
@@ -37,9 +37,9 @@ int main(void)
     //camera
 
     Camera3D camera = { 0 };
-    camera.position = (Vector3){ 10.0f, 10.0f, 10.0f }; // Camera position
-    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Camera looking at point
-    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
+    camera.position = { 10.0f, 10.0f, 10.0f }; // Camera position
+    camera.target = { 0.0f, 0.0f, 0.0f };      // Camera looking at point
+    camera.up = { 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
     camera.fovy = 45.0f;                                // Camera field-of-view Y
     camera.projection = CAMERA_PERSPECTIVE;             // Camera mode type
     SetCameraMode(camera, CAMERA_FREE);                 // Set a free camera mode
@@ -58,8 +58,8 @@ int main(void)
         //-----------------------------------------------------
         UpdateCamera(&camera);          // Update camera
 
-        if (IsKeyDown('X')) camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
-        if (IsKeyDown('R')) tissue = Particles(100, 5.0f, 0.05f);
+        if (IsKeyDown('X')) camera.target = { 0.0f, 0.0f, 0.0f };
+        if (IsKeyDown('R')) tissue = Particles(numberOfParticles, 5.0f, 0.05f);
 
         Vector3 spherePos = sphere.get_position();
         if (IsKeyDown('A')) spherePos = comp.add(spherePos, {0.10f, 0.0f, 0.0f});
